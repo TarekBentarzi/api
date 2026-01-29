@@ -31,6 +31,36 @@
 $ npm install
 ```
 
+### Local Postgres (Docker)
+
+Pour démarrer une base Postgres locale conforme à la configuration du projet :
+
+1. Dupliquez le fichier d'exemple :
+
+```bash
+cp .env.example .env
+```
+
+2. Démarrez Postgres (le script prépare le schema et les seeds) :
+
+```bash
+npm run db:up
+```
+
+3. Pour vous connecter à la base (psql) :
+
+```bash
+npm run db:psql
+```
+
+4. Pour arrêter et supprimer les volumes :
+
+```bash
+npm run db:down
+```
+
+> Note : les scripts d'initialisation (`db/init/*.sql`) sont exécutés uniquement la première fois que le volume est initialisé. Pour gérer les mises à jour de schéma en production, utilisez des migrations (prisma, node-pg-migrate, Flyway, etc.).
+
 ## Compile and run the project
 
 ```bash
