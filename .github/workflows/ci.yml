@@ -42,11 +42,13 @@ jobs:
         run: npm run prisma:generate
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/qlearn_test
+          DIRECT_URL: postgresql://test:test@localhost:5432/qlearn_test
 
       - name: Run database migrations
         run: npm run db:migrate
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/qlearn_test
+          DIRECT_URL: postgresql://test:test@localhost:5432/qlearn_test
 
       - name: Run linter
         run: npm run lint
@@ -55,8 +57,10 @@ jobs:
         run: npm run test
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/qlearn_test
+          DIRECT_URL: postgresql://test:test@localhost:5432/qlearn_test
 
       - name: Build application
         run: npm run build
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/qlearn_test
+          DIRECT_URL: postgresql://test:test@localhost:5432/qlearn_test
