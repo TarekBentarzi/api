@@ -6,11 +6,11 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "prisma generate && prisma migrate deploy && nest build",
     "db:up": "docker compose -f docker-compose.postgres.yml up -d",
     "db:down": "docker compose -f docker-compose.postgres.yml down -v",
-    "db:psql": "docker compose -f docker-compose.postgres.yml exec postgres psql -U $POSTGRES_USER -d $POSTGRES_DB",
-    "db:seed": "docker compose -f docker-compose.postgres.yml exec -T postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -f /docker-entrypoint-initdb.d/02-seed.sql || true",
+    "db:psql": "docker compose -f docker-compose.postgres.yml exec postgres psql -U dev -d qlearn_dev",
+    "db:seed": "docker compose -f docker-compose.postgres.yml exec -T postgres psql -U dev -d qlearn_dev -f /docker-entrypoint-initdb.d/02-seed.sql || true",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prisma:generate": "prisma generate --schema prisma/schema.prisma",
     "db:migrate": "prisma migrate deploy --schema prisma/schema.prisma",
@@ -30,9 +30,9 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
+    "@prisma/client": "^5.16.0",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "@prisma/client": "^5.16.0"
+    "rxjs": "^7.8.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -44,12 +44,14 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
     "jest": "^30.0.0",
     "prettier": "^3.4.2",
+    "prisma": "^5.16.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
@@ -57,8 +59,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0",
-    "prisma": "^5.16.0"
+    "typescript-eslint": "^8.20.0"
   },
   "jest": {
     "moduleFileExtensions": [
@@ -76,5 +77,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
