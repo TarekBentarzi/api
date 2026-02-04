@@ -1,0 +1,38 @@
+name: Branch Name Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  push:
+    branches-ignore:
+      - master
+      - main
+      - develop
+
+jobs:
+  check-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name format
+        run: |
+          BRANCH_NAME="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          echo "Checking branch name: $BRANCH_NAME"
+          
+          # Regex pattern: (feat|fix|bug|refacto|draft)/[0-9]+-.*
+          if [[ ! "$BRANCH_NAME" =~ ^(feat|fix|bug|refacto|draft)/[0-9]+-[a-z0-9-]+$ ]]; then
+            echo "❌ Invalid branch name format!"
+            echo ""
+            echo "Branch name must follow this pattern:"
+            echo "  {prefix}/{number}-{message}"
+            echo ""
+            echo "Valid prefixes: feat, fix, bug, refacto, draft"
+            echo "Examples:"
+            echo "  ✅ feat/123-add-user-authentication"
+            echo "  ✅ fix/42-correct-login-bug"
+            echo "  ✅ refacto/7-improve-performance"
+            echo "  ❌ feature/add-login (missing number)"
+            echo "  ❌ fix-bug (missing slash and number)"
+            exit 1
+          fi
+          
+          echo "✅ Branch name is valid!"
