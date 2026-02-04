@@ -3,10 +3,10 @@ import { UserService } from './user.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../../../../domain/user/user.entity';
+import { Prisma } from '@prisma/client';
 
 describe('UserService', () => {
   let service: UserService;
-  let prisma: PrismaService;
 
   const mockPrismaService = {
     user: {
@@ -27,7 +27,6 @@ describe('UserService', () => {
     }).compile();
 
     service = module.get<UserService>(UserService);
-    prisma = module.get<PrismaService>(PrismaService);
   });
 
   it('should be defined', () => {
@@ -78,7 +77,12 @@ describe('UserService', () => {
     });
 
     it('should throw ConflictException if email exists', async () => {
-      mockPrismaService.user.create.mockRejectedValue({ code: 'P2002' });
+      mockPrismaService.user.create.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Email already exists', {
+          code: 'P2002',
+          clientVersion: 'mock',
+        }),
+      );
       await expect(
         service.create({ name: 'John', email: 'john@example.com' }),
       ).rejects.toThrow(ConflictException);
@@ -87,7 +91,11 @@ describe('UserService', () => {
 
   describe('update', () => {
     it('should update and return user', async () => {
-      const updatedUser = { id: '1', name: 'John Updated', email: 'john@example.com' };
+      const updatedUser = {
+        id: '1',
+        name: 'John Updated',
+        email: 'john@example.com',
+      };
       mockPrismaService.user.update.mockResolvedValue(updatedUser);
 
       const result = await service.update('1', { name: 'John Updated' });
@@ -95,8 +103,15 @@ describe('UserService', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockPrismaService.user.update.mockRejectedValue({ code: 'P2025' });
-      await expect(service.update('999', {})).rejects.toThrow(NotFoundException);
+      mockPrismaService.user.update.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Not found', {
+          code: 'P2025',
+          clientVersion: 'mock',
+        }),
+      );
+      await expect(service.update('999', {})).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -107,9 +122,13 @@ describe('UserService', () => {
     });
 
     it('should throw NotFoundException if user not found', async () => {
-      mockPrismaService.user.delete.mockRejectedValue({ code: 'P2025' });
+      mockPrismaService.user.delete.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Not found', {
+          code: 'P2025',
+          clientVersion: 'mock',
+        }),
+      );
       await expect(service.delete('999')).rejects.toThrow(NotFoundException);
     });
   });
 });
-

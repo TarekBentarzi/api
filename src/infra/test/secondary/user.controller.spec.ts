@@ -6,7 +6,6 @@ import { NotFoundException } from '@nestjs/common';
 
 describe('UserController', () => {
   let controller: UserController;
-  let service: UserService;
 
   const mockUserService = {
     findAll: jest.fn(),
@@ -23,7 +22,6 @@ describe('UserController', () => {
     }).compile();
 
     controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
@@ -52,7 +50,9 @@ describe('UserController', () => {
 
     it('should throw NotFoundException', async () => {
       mockUserService.findById.mockResolvedValue(null);
-      await expect(controller.findOne('999')).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne('999')).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -61,9 +61,11 @@ describe('UserController', () => {
       const user = new UserEntity('1', 'John', 'john@example.com');
       mockUserService.create.mockResolvedValue(user);
 
-      const result = await controller.create({ name: 'John', email: 'john@example.com' });
+      const result = await controller.create({
+        name: 'John',
+        email: 'john@example.com',
+      });
       expect(result.id).toBe('1');
     });
   });
 });
-

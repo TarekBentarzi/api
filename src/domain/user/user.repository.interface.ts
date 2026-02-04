@@ -1,9 +1,9 @@
 import { UserEntity } from './user.entity';
 
 export interface UserRepositoryInterface {
-    findAll(): Promise<UserEntity[]>;
-    findById(id: string): Promise<UserEntity | null>;
-    create(user: Partial<UserEntity>): Promise<UserEntity>;
-    update(id: string, user: Partial<UserEntity>): Promise<UserEntity>;
-    delete(id: string): Promise<void>;
+  findAll(): Promise<UserEntity[]>;
+  findById(id: string): Promise<UserEntity | null>;
+  create(user: Partial<UserEntity>): Promise<UserEntity>;
+  update(id: string, user: Partial<UserEntity>): Promise<UserEntity>;
+  delete(id: string): Promise<void>;
 }
