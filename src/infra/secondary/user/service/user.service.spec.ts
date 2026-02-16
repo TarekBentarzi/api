@@ -65,9 +65,36 @@ describe('UserService', () => {
     });
   });
 
+  describe('findByEmail', () => {
+    it('should return a user if found by email', async () => {
+      const user = {
+        id: '1',
+        name: 'John',
+        email: 'john@example.com',
+        password: 'hashed',
+      };
+      mockPrismaService.user.findUnique.mockResolvedValue(user);
+
+      const result = await service.findByEmail('john@example.com');
+      expect(result).toBeInstanceOf(UserEntity);
+      expect(result?.email).toBe('john@example.com');
+      expect(result?.password).toBe('hashed');
+    });
+
+    it('should return null if user not found by email', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue(null);
+      const result = await service.findByEmail('notfound@example.com');
+      expect(result).toBeNull();
+    });
+  });
+
   describe('create', () => {
     it('should create and return a user', async () => {
-      const newUser = { name: 'John', email: 'john@example.com' };
+      const newUser = {
+        name: 'John',
+        email: 'john@example.com',
+        password: 'password123',
+      };
       const createdUser = { id: '1', ...newUser };
       mockPrismaService.user.create.mockResolvedValue(createdUser);
 
@@ -84,8 +111,25 @@ describe('UserService', () => {
         }),
       );
       await expect(
-        service.create({ name: 'John', email: 'john@example.com' }),
+        service.create({
+          name: 'John',
+          email: 'john@example.com',
+          password: 'password123',
+        }),
       ).rejects.toThrow(ConflictException);
+    });
+
+    it('should throw other errors as-is', async () => {
+      const genericError = new Error('Database error');
+      mockPrismaService.user.create.mockRejectedValue(genericError);
+
+      await expect(
+        service.create({
+          name: 'John',
+          email: 'john@example.com',
+          password: 'password123',
+        }),
+      ).rejects.toThrow('Database error');
     });
   });
 
@@ -113,6 +157,15 @@ describe('UserService', () => {
         NotFoundException,
       );
     });
+
+    it('should throw other errors as-is', async () => {
+      const genericError = new Error('Database error');
+      mockPrismaService.user.update.mockRejectedValue(genericError);
+
+      await expect(service.update('1', { name: 'Test' })).rejects.toThrow(
+        'Database error',
+      );
+    });
   });
 
   describe('delete', () => {
@@ -129,6 +182,13 @@ describe('UserService', () => {
         }),
       );
       await expect(service.delete('999')).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw other errors as-is', async () => {
+      const genericError = new Error('Database error');
+      mockPrismaService.user.delete.mockRejectedValue(genericError);
+
+      await expect(service.delete('1')).rejects.toThrow('Database error');
     });
   });
 });

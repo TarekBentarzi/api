@@ -68,4 +68,39 @@ describe('UserController', () => {
       expect(result.id).toBe('1');
     });
   });
+
+  describe('update', () => {
+    it('should update user', async () => {
+      const user = new UserEntity('1', 'John Updated', 'john@example.com');
+      mockUserService.update.mockResolvedValue(user);
+
+      const result = await controller.update('1', { name: 'John Updated' });
+      expect(result.name).toBe('John Updated');
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      mockUserService.update.mockRejectedValue(
+        new NotFoundException('User not found'),
+      );
+
+      await expect(
+        controller.update('999', { name: 'Updated' }),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('remove', () => {
+    it('should delete user', async () => {
+      mockUserService.delete.mockResolvedValue(undefined);
+      await expect(controller.remove('1')).resolves.not.toThrow();
+    });
+
+    it('should throw NotFoundException when user not found', async () => {
+      mockUserService.delete.mockRejectedValue(
+        new NotFoundException('User not found'),
+      );
+
+      await expect(controller.remove('999')).rejects.toThrow(NotFoundException);
+    });
+  });
 });
