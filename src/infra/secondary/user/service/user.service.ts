@@ -7,6 +7,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { UserRepositoryInterface } from '../../../../domain/user/user.repository.interface';
 import { UserEntity } from '../../../../domain/user/user.entity';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService implements UserRepositoryInterface {
@@ -22,15 +23,25 @@ export class UserService implements UserRepositoryInterface {
       where: { id },
     });
     if (!user) return null;
-    return new UserEntity(user.id, user.name, user.email);
+    return new UserEntity(user.id, user.name, user.email, user.password);
+  }
+
+  async findByEmail(email: string): Promise<UserEntity | null> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) return null;
+    return new UserEntity(user.id, user.name, user.email, user.password);
   }
 
   async create(user: Partial<UserEntity>): Promise<UserEntity> {
     try {
+      const hashedPassword = await bcrypt.hash(user.password!, 10);
       const created = await this.prisma.user.create({
         data: {
           name: user.name!,
           email: user.email!,
+          password: hashedPassword,
         },
       });
       return new UserEntity(created.id, created.name, created.email);
