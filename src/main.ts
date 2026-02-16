@@ -8,7 +8,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:8081',
       'http://localhost:19006',
-      'https://app-nu7nwwzy9-tarekbentarzis-projects.vercel.app',
+      'https://app-ui-lemon.vercel.app',
       /\.vercel\.app$/,
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
