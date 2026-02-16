@@ -8,16 +8,19 @@ import {
   Post,
   NotFoundException,
   ParseUUIDPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { JwtAuthGuard } from '../../../primary/auth/guards/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<UserResponseDto[]> {
     const users = await this.userService.findAll();
