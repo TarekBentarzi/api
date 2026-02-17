@@ -4,20 +4,23 @@ import { AppModule } from '../src/infra/primary/app/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import * as express from 'express';
+import { Request, Response } from 'express';
 
-const server = express();
+const expressApp = express();
+let cachedApp: any;
 
-export let app: any;
-
-async function createApp() {
-  if (!app) {
-    app = await NestFactory.create(
+async function bootstrapServer() {
+  if (!cachedApp) {
+    const nestApp = await NestFactory.create(
       AppModule,
-      new ExpressAdapter(server),
-      { logger: ['error', 'warn', 'log'] }
+      new ExpressAdapter(expressApp),
+      { 
+        logger: ['error', 'warn', 'log'],
+        abortOnError: false
+      }
     );
     
-    app.enableCors({
+    nestApp.enableCors({
       origin: [
         'http://localhost:8081',
         'http://localhost:19006',
@@ -29,15 +32,24 @@ async function createApp() {
       allowedHeaders: 'Content-Type,Authorization,Accept',
     });
     
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
-    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+    nestApp.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    nestApp.useGlobalInterceptors(new ClassSerializerInterceptor(nestApp.get(Reflector)));
     
-    await app.init();
+    await nestApp.init();
+    cachedApp = nestApp.getHttpAdapter().getInstance();
   }
-  return app;
+  return cachedApp;
 }
 
-export default async (req: any, res: any) => {
-  await createApp();
-  return server(req, res);
+export default async (req: Request, res: Response) => {
+  try {
+    const app = await bootstrapServer();
+    app(req, res);
+  } catch (error) {
+    console.error('Serverless function error:', error);
+    res.status(500).json({ 
+      error: 'Internal server error',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
 };
