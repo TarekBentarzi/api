@@ -3,8 +3,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { AppModule } from '../src/infra/primary/app/app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import * as express from 'express';
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
 const expressApp = express();
 let cachedApp: any;
