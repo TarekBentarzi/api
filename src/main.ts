@@ -9,7 +9,7 @@ async function bootstrap() {
       'http://localhost:8081',
       'http://localhost:19006',
       'https://app-ui-lemon.vercel.app',
-      /\.vercel\.app$/,
+      /^https:\/\/.*\.vercel\.app$/,
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
