@@ -20,16 +20,13 @@ import { JwtAuthGuard } from '../../../primary/auth/guards/jwt-auth.guard';
 @Controller('users/:userId/memorizations')
 @UseGuards(JwtAuthGuard)
 export class UserMemorizationController {
-  constructor(
-    private readonly memorizationService: UserMemorizationService,
-  ) {}
+  constructor(private readonly memorizationService: UserMemorizationService) {}
 
   @Get()
   async findByUserId(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<UserMemorizationResponseDto[]> {
-    const memorizations =
-      await this.memorizationService.findByUserId(userId);
+    const memorizations = await this.memorizationService.findByUserId(userId);
     return memorizations.map((m) => new UserMemorizationResponseDto(m));
   }
 

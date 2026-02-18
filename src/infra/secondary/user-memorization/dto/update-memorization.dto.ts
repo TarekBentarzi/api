@@ -1,4 +1,11 @@
-import { IsEnum, IsInt, Min, Max, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsEnum,
+  IsInt,
+  Min,
+  Max,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class UpdateMemorizationDto {
   @IsOptional()

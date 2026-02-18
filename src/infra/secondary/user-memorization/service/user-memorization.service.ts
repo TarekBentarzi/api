@@ -6,12 +6,10 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserMemorizationRepositoryInterface } from '../../../../domain/user-memorization/user-memorization.repository.interface';
 import { UserMemorizationEntity } from '../../../../domain/user-memorization/user-memorization.entity';
-import { Prisma, UserMemorization } from '@prisma/client';
+import { Prisma, UserMemorization, StatutMemorisation } from '@prisma/client';
 
 @Injectable()
-export class UserMemorizationService
-  implements UserMemorizationRepositoryInterface
-{
+export class UserMemorizationService implements UserMemorizationRepositoryInterface {
   constructor(private prisma: PrismaService) {}
 
   async findByUserId(userId: string): Promise<UserMemorizationEntity[]> {
@@ -97,8 +95,8 @@ export class UserMemorizationService
   ): Promise<UserMemorizationEntity> {
     try {
       const updateData: Prisma.UserMemorizationUpdateInput = {};
-      
-      if (data.statut !== undefined) updateData.statut = data.statut as any;
+
+      if (data.statut !== undefined) updateData.statut = data.statut as StatutMemorisation;
       if (data.niveauMaitrise !== undefined)
         updateData.niveauMaitrise = data.niveauMaitrise;
       if (data.exercicesTotal !== undefined)
