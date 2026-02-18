@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { UserMemorizationRepositoryInterface } from '../../../../domain/user-memorization/user-memorization.repository.interface';
 import { UserMemorizationEntity } from '../../../../domain/user-memorization/user-memorization.entity';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserMemorization } from '@prisma/client';
 
 @Injectable()
 export class UserMemorizationService
@@ -142,7 +142,7 @@ export class UserMemorizationService
     }
   }
 
-  private toEntity(m: Prisma.UserMemorization): UserMemorizationEntity {
+  private toEntity(m: UserMemorization): UserMemorizationEntity {
     return new UserMemorizationEntity(
       m.id,
       m.userId,
