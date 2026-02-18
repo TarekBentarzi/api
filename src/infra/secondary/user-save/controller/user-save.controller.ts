@@ -4,7 +4,6 @@ import {
   Put,
   Param,
   Body,
-  NotFoundException,
   ParseUUIDPipe,
   UseGuards,
 } from '@nestjs/common';
