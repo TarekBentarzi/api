@@ -142,7 +142,7 @@ export class UserMemorizationService
     }
   }
 
-  private toEntity(m: Prisma.UserMemorizationGetPayload<{}>): UserMemorizationEntity {
+  private toEntity(m: Prisma.UserMemorization): UserMemorizationEntity {
     return new UserMemorizationEntity(
       m.id,
       m.userId,
