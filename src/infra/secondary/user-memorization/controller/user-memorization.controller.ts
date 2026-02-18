@@ -14,6 +14,7 @@ import { UserMemorizationService } from '../service/user-memorization.service';
 import { UserMemorizationResponseDto } from '../dto/user-memorization-response.dto';
 import { CreateMemorizationDto } from '../dto/create-memorization.dto';
 import { UpdateMemorizationDto } from '../dto/update-memorization.dto';
+import { UserMemorizationEntity } from '../../../../domain/user-memorization/user-memorization.entity';
 import { JwtAuthGuard } from '../../../primary/auth/guards/jwt-auth.guard';
 
 @Controller('users/:userId/memorizations')
@@ -71,7 +72,12 @@ export class UserMemorizationController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDto: UpdateMemorizationDto,
   ): Promise<UserMemorizationResponseDto> {
-    const updateData = { ...updateDto };
+    const updateData: Partial<UserMemorizationEntity> = {
+      statut: updateDto.statut,
+      niveauMaitrise: updateDto.niveauMaitrise,
+      exercicesTotal: updateDto.exercicesTotal,
+      exercicesReussis: updateDto.exercicesReussis,
+    };
     if (updateDto.prochaineRevision) {
       updateData.prochaineRevision = new Date(updateDto.prochaineRevision);
     }

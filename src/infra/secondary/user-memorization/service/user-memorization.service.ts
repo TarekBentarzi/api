@@ -98,7 +98,7 @@ export class UserMemorizationService
     try {
       const updateData: Prisma.UserMemorizationUpdateInput = {};
       
-      if (data.statut !== undefined) updateData.statut = data.statut;
+      if (data.statut !== undefined) updateData.statut = data.statut as any;
       if (data.niveauMaitrise !== undefined)
         updateData.niveauMaitrise = data.niveauMaitrise;
       if (data.exercicesTotal !== undefined)
