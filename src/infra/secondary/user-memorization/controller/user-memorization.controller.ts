@@ -71,7 +71,7 @@ export class UserMemorizationController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDto: UpdateMemorizationDto,
   ): Promise<UserMemorizationResponseDto> {
-    const updateData: any = { ...updateDto };
+    const updateData = { ...updateDto };
     if (updateDto.prochaineRevision) {
       updateData.prochaineRevision = new Date(updateDto.prochaineRevision);
     }

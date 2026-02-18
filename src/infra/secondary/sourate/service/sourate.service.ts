@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { SourateRepositoryInterface } from '../../../../domain/sourate/sourate.repository.interface';
 import { SourateEntity } from '../../../../domain/sourate/sourate.entity';

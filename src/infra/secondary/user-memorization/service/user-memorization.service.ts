@@ -96,7 +96,7 @@ export class UserMemorizationService
     data: Partial<UserMemorizationEntity>,
   ): Promise<UserMemorizationEntity> {
     try {
-      const updateData: any = {};
+      const updateData: Prisma.UserMemorizationUpdateInput = {};
       
       if (data.statut !== undefined) updateData.statut = data.statut;
       if (data.niveauMaitrise !== undefined)
@@ -142,7 +142,7 @@ export class UserMemorizationService
     }
   }
 
-  private toEntity(m: any): UserMemorizationEntity {
+  private toEntity(m: Prisma.UserMemorizationGetPayload<{}>): UserMemorizationEntity {
     return new UserMemorizationEntity(
       m.id,
       m.userId,
