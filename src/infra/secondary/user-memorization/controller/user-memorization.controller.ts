@@ -74,10 +74,8 @@ export class UserMemorizationController {
       niveauMaitrise: updateDto.niveauMaitrise,
       exercicesTotal: updateDto.exercicesTotal,
       exercicesReussis: updateDto.exercicesReussis,
+      prochaineRevision: updateDto.prochaineRevision ? new Date(updateDto.prochaineRevision) : undefined,
     };
-    if (updateDto.prochaineRevision) {
-      updateData.prochaineRevision = new Date(updateDto.prochaineRevision);
-    }
     const memorization = await this.memorizationService.update(id, updateData);
     return new UserMemorizationResponseDto(memorization);
   }
