@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String             @id @default(uuid()) @db.Uuid
+  name             String
+  email            String             @unique
+  password         String
+  save             UserSave?
+  memorizations    UserMemorization[]
+  createdAt        DateTime           @default(now()) @map("created_at")
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Sourate {
+  id                   String    @id @default(uuid()) @db.Uuid
+  numero               Int       @unique
+  nomArabe             String    @map("nom_arabe")
+  nomTranslitteration  String    @map("nom_translitteration")
+  nomTraduction        String    @map("nom_traduction")
+  nombreVersets        Int       @map("nombre_versets")
+  revelation           String    // 'Mecquoise' ou 'Médinoise'
+  versets              Verset[]
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@map("sourates")
+}
+
+model Verset {
+  id                String              @id @default(uuid()) @db.Uuid
+  sourateNumero     Int                 @map("sourate_numero")
+  versetNumero      Int                 @map("verset_numero")
+  texteArabe        String              @map("texte_arabe") @db.Text
+  translitteration  String?             @db.Text
+  traduction        String?             @db.Text
+  audioUrl          String?             @map("audio_url")
+  sourate           Sourate             @relation(fields: [sourateNumero], references: [numero], onDelete: Cascade)
+  memorizations     UserMemorization[]
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+
+  @@unique([sourateNumero, versetNumero])
+  @@index([sourateNumero])
+  @@index([sourateNumero, versetNumero])
+  @@map("versets")
+}
+
+model UserSave {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @unique @map("user_id") @db.Uuid
+  sourateNumero  Int      @map("sourate_numero")
+  versetNumero   Int      @map("verset_numero")
+  lastReadAt     DateTime @default(now()) @map("last_read_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("user_saves")
+}
+
+enum StatutMemorisation {
+  en_cours
+  memorise
+  a_reviser
+
+  @@map("statut_memorisation")
+}
+
+model UserMemorization {
+  id                  String              @id @default(uuid()) @db.Uuid
+  userId              String              @map("user_id") @db.Uuid
+  versetId            String              @map("verset_id") @db.Uuid
+  sourateNumero       Int                 @map("sourate_numero")
+  versetNumero        Int                 @map("verset_numero")
+  statut              StatutMemorisation  @default(en_cours)
+  niveauMaitrise      Int                 @default(0) @map("niveau_maitrise")
+  exercicesTotal      Int                 @default(0) @map("exercices_total")
+  exercicesReussis    Int                 @default(0) @map("exercices_reussis")
+  derniereRevision    DateTime?           @map("derniere_revision")
+  prochaineRevision   DateTime?           @map("prochaine_revision")
+  user                User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verset              Verset              @relation(fields: [versetId], references: [id], onDelete: Cascade)
+  exercices           Exercice[]
+  createdAt           DateTime            @default(now()) @map("created_at")
+  updatedAt           DateTime            @updatedAt @map("updated_at")
+
+  @@unique([userId, versetId])
+  @@index([userId])
+  @@index([statut])
+  @@index([prochaineRevision])
+  @@map("user_memorizations")
+}
+
+enum TypeExercice {
+  completion
+  recitation
+  ordre
+  qcm
+
+  @@map("type_exercice")
+}
+
+model Exercice {
+  id               String           @id @default(uuid()) @db.Uuid
+  memorizationId   String           @map("memorization_id") @db.Uuid
+  typeExercice     TypeExercice     @map("type_exercice")
+  resultat         Boolean
+  score            Int?
+  dureeSecondes    Int?             @map("duree_secondes")
+  details          Json?
+  memorization     UserMemorization @relation(fields: [memorizationId], references: [id], onDelete: Cascade)
+  completedAt      DateTime         @default(now()) @map("completed_at")
+
+  @@index([memorizationId])
+  @@map("exercices")
+}
