@@ -15,6 +15,8 @@ model User {
   password         String
   save             UserSave?
   memorizations    UserMemorization[]
+  quizAttempts     QuizAttempt[]
+  sourateProgress  SourateProgress[]
   createdAt        DateTime           @default(now()) @map("created_at")
   updatedAt        DateTime           @updatedAt @map("updated_at")
 
@@ -123,4 +125,54 @@ model Exercice {
 
   @@index([memorizationId])
   @@map("exercices")
+}
+
+// Nouvelle table pour le quiz system
+model QuizQuestion {
+  id                String        @id @default(uuid()) @db.Uuid
+  versetId          String        @map("verset_id") @db.Uuid
+  sourateNumero     Int           @map("sourate_numero")
+  versetNumero      Int           @map("verset_numero")
+  texteArabe        String        @map("texte_arabe") @db.Text
+  texteWithBlank    String        @map("texte_with_blank") @db.Text
+  correctAnswer     String        @map("correct_answer")
+  options           Json          // Array de 4 options
+  wordPosition      Int           @map("word_position")
+  attempts          QuizAttempt[]
+  createdAt         DateTime      @default(now()) @map("created_at")
+
+  @@unique([versetId, wordPosition])
+  @@index([sourateNumero])
+  @@map("quiz_questions")
+}
+
+model QuizAttempt {
+  id             String       @id @default(uuid()) @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  questionId     String       @map("question_id") @db.Uuid
+  sourateNumero  Int          @map("sourate_numero")
+  selectedAnswer String       @map("selected_answer")
+  isCorrect      Boolean      @map("is_correct")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question       QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptedAt    DateTime     @default(now()) @map("attempted_at")
+
+  @@index([userId, sourateNumero])
+  @@index([userId, questionId])
+  @@map("quiz_attempts")
+}
+
+model SourateProgress {
+  id                  String   @id @default(uuid()) @db.Uuid
+  userId              String   @map("user_id") @db.Uuid
+  sourateNumero       Int      @map("sourate_numero")
+  isMemorized         Boolean  @default(false) @map("is_memorized")
+  completedAt         DateTime? @map("completed_at")
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, sourateNumero])
+  @@index([userId])
+  @@map("sourate_progress")
 }
